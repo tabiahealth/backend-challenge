@@ -10,7 +10,7 @@ Welcome to the Tabia backend challenge.
 
 In this challenge, we expect you to:
 
-- Implement a runnable application
+- Implement the interfaces provided at src/main/java/health/tabia/challenge
 - Write all code and documentation in english
 
 Some other desired requirements are:
