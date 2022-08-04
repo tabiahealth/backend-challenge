@@ -2,16 +2,16 @@
 
 Hello, developer :wave:!
 
-Welcome to the Tabia frontend challenge.
+Welcome to the Tabia backend challenge.
 
-> **_NOTE:_** This challenge is part of the hiring process. We assume here that you are already in contact with someone at Tabia.
+> **_NOTE:_** This challenge is part of the hiring process. We assume here that you are already in contact with someone at Tabia. If that is not the case, please apply at careers.tabia.health.
 
 ## Instructions
 
 In this challenge, we expect you to:
 
-- Implement a runnable application 
-
+- Implement a runnable application
+- Write all code and documentation in english
 
 Some other desired requirements are:
 
