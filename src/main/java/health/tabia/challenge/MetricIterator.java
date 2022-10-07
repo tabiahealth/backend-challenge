@@ -6,7 +6,7 @@ package health.tabia.challenge;
 public interface MetricIterator extends AutoCloseable {
     /**
      * Move the iterator to the next metric, if any.
-     * @return false if iterator has reached the end, false otherwise
+     * @return false if iterator has reached the end, true otherwise
      */
     boolean moveNext();
 
