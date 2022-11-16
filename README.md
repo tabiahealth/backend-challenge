@@ -10,7 +10,10 @@ Welcome to the Tabia backend challenge.
 
 In this challenge, we expect you to:
 
-- Implement the interfaces provided at src/main/java/health/tabia/challenge
+- Implement the provided interfaces, considering:
+  - All the data should be stored in memory, inside the application context (no external database is needed)
+  - Support concurrent accesses, both for read and write
+  - Use data structures that optimize either the read or write operations (and justify your choices)
 - Write all code and documentation in english
 
 Some other desired requirements are:
