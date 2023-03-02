@@ -79,12 +79,14 @@ public class MetricList implements MetricStore {
     synchronized public MetricIterator query(String name, long from, long to) {
         MetricList filteredStore = new MetricList(new ArrayList<>());
 
+        // when name is null or empty and intervals are 0, return original iterator
         if ((name == null || name.equalsIgnoreCase("") && (from == 0 && to == 0)) || (from > to)) {
             return this.iterator();
         }
 
         for (Metric metric : this.store) {
             boolean isIncluded = false;
+            // if a name is informed, query is made with interval together
             if (name != null && !name.equalsIgnoreCase("") && metric.getName().equalsIgnoreCase(name)) {
                 isIncluded = true;
 
@@ -95,6 +97,7 @@ public class MetricList implements MetricStore {
                 }
             }
 
+            // if a name is not informed, only interval is considered
             if (name.equalsIgnoreCase("")) {
                 if (metric.getTimestamp() >= from && metric.getTimestamp() <= to) {
                     isIncluded = true;
