@@ -31,13 +31,13 @@ public class MetricList implements MetricStore {
 
             @Override
             public boolean moveNext() {
-                return (currentIndex < size && store.get(currentIndex++) != null);
+                currentIndex += 1;
+                return (currentIndex < size && store.get(currentIndex) != null);
             }
 
             @Override
             public void remove() {
                 store.remove(currentIndex);
-                currentIndex--;
                 size--;
             }
 
@@ -63,34 +63,47 @@ public class MetricList implements MetricStore {
 
     @Override
     synchronized public void removeAll(String name) {
+        List<Metric> cleanedList = new ArrayList<>();
         if (this.store != null) {
             for (Metric metric : this.store) {
-                if (metric.getName().equalsIgnoreCase(name)) {
-                    this.store.remove(metric);
+                if (!metric.getName().equalsIgnoreCase(name)) {
+                    cleanedList.add(metric);
                 }
             }
+            this.store = cleanedList;
+            this.size = cleanedList.size();
         }
     }
 
     @Override
     synchronized public MetricIterator query(String name, long from, long to) {
-        MetricList filteredStore = new MetricList(this.store);
+        MetricList filteredStore = new MetricList(new ArrayList<>());
 
-        for (Metric metric : filteredStore.store) {
-            boolean shouldRemove = false;
-            if (name != null && !name.equalsIgnoreCase("") && !metric.getName().equalsIgnoreCase(name)) {
-                shouldRemove = true;
-            } else {
-                if (from <= to) {
-                    if (metric.getTimestamp() < from || metric.getTimestamp() > to) {
-                        shouldRemove = true;
-                    }
+        if ((name == null || name.equalsIgnoreCase("") && (from == 0 && to == 0)) || (from > to)) {
+            return this.iterator();
+        }
+
+        for (Metric metric : this.store) {
+            boolean isIncluded = false;
+            if (name != null && !name.equalsIgnoreCase("") && metric.getName().equalsIgnoreCase(name)) {
+                isIncluded = true;
+
+                if (metric.getTimestamp() >= from && metric.getTimestamp() <= to) {
+                    isIncluded = true;
+                } else {
+                    isIncluded = false;
+                }
+            }
+
+            if (name.equalsIgnoreCase("")) {
+                if (metric.getTimestamp() >= from && metric.getTimestamp() <= to) {
+                    isIncluded = true;
                 }
             }
 
             // If I have a signal to insert, I do it.
-            if (shouldRemove) {
-                filteredStore.store.remove(metric);
+            if (isIncluded) {
+                filteredStore.insert(metric);
             }
         }
 
