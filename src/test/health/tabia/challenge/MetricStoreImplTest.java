@@ -5,14 +5,14 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 
 import org.junit.After;
 import org.junit.Test;
 
 public class MetricStoreImplTest {
 
-    private MetricList list = new MetricList(new ArrayList<>());
+    private MetricList list = new MetricList(new LinkedList<>());
 
     @Test
     public void testDemo() {

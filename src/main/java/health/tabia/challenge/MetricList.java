@@ -1,6 +1,7 @@
 package health.tabia.challenge;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -9,10 +10,10 @@ public class MetricList implements MetricStore {
 
     // It was used list to handle indexes and iterations needed to remove an
     // object
-    private List<Metric> store;
+    private LinkedList<Metric> store;
     private int size;
 
-    public MetricList(List<Metric> newStore) {
+    public MetricList(LinkedList<Metric> newStore) {
         this.store = newStore;
         this.size = newStore.size();
     }
@@ -56,7 +57,7 @@ public class MetricList implements MetricStore {
     @Override
     synchronized public void insert(Metric metric) {
         if (this.store == null) {
-            this.store = new ArrayList<Metric>();
+            this.store = new LinkedList<Metric>();
         }
 
         this.store.add(metric);
@@ -73,17 +74,17 @@ public class MetricList implements MetricStore {
 
     @Override
     synchronized public MetricIterator query(String name, long from, long to) {
-        MetricList filteredStore = new MetricList(new ArrayList<>());
+        MetricList filteredStore = new MetricList(new LinkedList<>());
 
         // when name is null or empty and intervals are 0, return original iterator
         if ((name == null || name.equalsIgnoreCase("") && (from == 0 && to == 0)) || (from > to)) {
             return this.iterator();
         }
 
-        filteredStore.store = this.store.stream()
+        filteredStore.store = new LinkedList<>(this.store.stream()
                 .filter(metric -> metric.getName().equalsIgnoreCase(name) && metric.getTimestamp() >= from
                         && metric.getTimestamp() <= to)
-                .collect(Collectors.toList());
+                .collect(Collectors.toList()));
 
         return filteredStore.iterator();
     }
