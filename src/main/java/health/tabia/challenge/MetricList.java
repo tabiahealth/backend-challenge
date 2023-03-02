@@ -2,6 +2,8 @@ package health.tabia.challenge;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 public class MetricList implements MetricStore {
 
@@ -63,15 +65,9 @@ public class MetricList implements MetricStore {
 
     @Override
     synchronized public void removeAll(String name) {
-        List<Metric> cleanedList = new ArrayList<>();
         if (this.store != null) {
-            for (Metric metric : this.store) {
-                if (!metric.getName().equalsIgnoreCase(name)) {
-                    cleanedList.add(metric);
-                }
-            }
-            this.store = cleanedList;
-            this.size = cleanedList.size();
+            this.store.removeIf(metric -> metric.getName().equalsIgnoreCase(name));
+            this.size = this.store.size();
         }
     }
 
@@ -84,31 +80,10 @@ public class MetricList implements MetricStore {
             return this.iterator();
         }
 
-        for (Metric metric : this.store) {
-            boolean isIncluded = false;
-            // if a name is informed, query is made with interval together
-            if (name != null && !name.equalsIgnoreCase("") && metric.getName().equalsIgnoreCase(name)) {
-                isIncluded = true;
-
-                if (metric.getTimestamp() >= from && metric.getTimestamp() <= to) {
-                    isIncluded = true;
-                } else {
-                    isIncluded = false;
-                }
-            }
-
-            // if a name is not informed, only interval is considered
-            if (name.equalsIgnoreCase("")) {
-                if (metric.getTimestamp() >= from && metric.getTimestamp() <= to) {
-                    isIncluded = true;
-                }
-            }
-
-            // If I have a signal to insert, I do it.
-            if (isIncluded) {
-                filteredStore.insert(metric);
-            }
-        }
+        filteredStore.store = this.store.stream()
+                .filter(metric -> metric.getName().equalsIgnoreCase(name) && metric.getTimestamp() >= from
+                        && metric.getTimestamp() <= to)
+                .collect(Collectors.toList());
 
         return filteredStore.iterator();
     }
