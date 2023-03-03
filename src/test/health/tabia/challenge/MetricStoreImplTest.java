@@ -5,14 +5,15 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.util.LinkedList;
+import java.util.HashMap;
+import java.util.List;
 
 import org.junit.After;
 import org.junit.Test;
 
 public class MetricStoreImplTest {
 
-    private MetricList list = new MetricList(new LinkedList<>());
+    private MetricList list = new MetricList(new HashMap<String, List<Metric>>());
 
     @Test
     public void testDemo() {
@@ -25,7 +26,7 @@ public class MetricStoreImplTest {
     @Test
     public void testInsert() {
         list.insert(new Metric("test", 1677713468));
-        assertEquals(1, list.getSize());
+        assertEquals(1, list.getStore().size());
     }
 
     /*
@@ -35,7 +36,7 @@ public class MetricStoreImplTest {
     public void testRemoveAll() {
         list.insert(new Metric("test", 1677713468));
         list.removeAll("test");
-        assertEquals(0, list.getSize());
+        assertEquals(0, list.getStore().size());
     }
 
     /*
@@ -47,7 +48,7 @@ public class MetricStoreImplTest {
         list.insert(new Metric("test", 1677713468));
         list.insert(new Metric("test_2", 1677713468));
         list.removeAll("test");
-        assertEquals(1, list.getSize());
+        assertEquals(1, list.getStore().size());
     }
 
     /*
@@ -65,8 +66,8 @@ public class MetricStoreImplTest {
         list.insert(new Metric("test_2", 1677713472));
         list.insert(new Metric("test", 1677713473));
         list.insert(new Metric("test_2", 1677713473));
-        MetricIterator it = list.query("test", 1677713471, 1677713473);
-        MetricIterator it2 = list.query("test_2", 1677713471, 1677713473);
+        MetricIterator it = (MetricIterator) list.query("test", 1677713471, 1677713473);
+        MetricIterator it2 = (MetricIterator) list.query("test_2", 1677713471, 1677713473);
         assertEquals(1677713471, it.current().getTimestamp());
         assertEquals(1677713472, it2.current().getTimestamp());
     }

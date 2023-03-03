@@ -1,91 +1,64 @@
 package health.tabia.challenge;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class MetricList implements MetricStore {
 
-    // It was used list to handle indexes and iterations needed to remove an
-    // object
-    private LinkedList<Metric> store;
-    private int size;
+    private HashMap<String, List<Metric>> store;
+    private boolean isWriting = false;
 
-    public MetricList(LinkedList<Metric> newStore) {
+    public MetricList(HashMap<String, List<Metric>> newStore) {
         this.store = newStore;
-        this.size = newStore.size();
     }
 
-    public int getSize() {
-        return this.size;
-    }
-
-    public MetricIterator iterator() {
-        MetricIterator metricIterator = new MetricIterator() {
-
-            private int currentIndex = 0;
-
-            @Override
-            public void close() throws Exception {
-                System.out.println("Closing metric iterator...");
-            }
-
-            @Override
-            public boolean moveNext() {
-                currentIndex += 1;
-                return (currentIndex < size && store.get(currentIndex) != null);
-            }
-
-            @Override
-            public void remove() {
-                store.remove(currentIndex);
-                size--;
-            }
-
-            @Override
-            public Metric current() {
-                return store.get(currentIndex);
-            }
-
-        };
-
-        return metricIterator;
+    public HashMap<String, List<Metric>> getStore() {
+        return this.store;
     }
 
     @Override
-    synchronized public void insert(Metric metric) {
+    public void insert(Metric metric) {
+        if (isWriting) {
+            return;
+        }
+        isWriting = true;
         if (this.store == null) {
-            this.store = new LinkedList<Metric>();
+            this.store = new HashMap<String, List<Metric>>();
         }
 
-        this.store.add(metric);
-        this.size++;
+        if (this.store.containsKey(metric.getName())) {
+            this.store.get(metric.getName()).add(metric);
+        } else {
+            List<Metric> list = new ArrayList<>();
+            list.add(metric);
+            this.store.put(metric.getName(), list);
+        }
+
+        isWriting = false;
     }
 
     @Override
-    synchronized public void removeAll(String name) {
+    public void removeAll(String name) {
+        if (isWriting) {
+            return;
+        }
+        isWriting = true;
         if (this.store != null) {
-            this.store.removeIf(metric -> metric.getName().equalsIgnoreCase(name));
-            this.size = this.store.size();
+            this.store.remove(name);
         }
+        isWriting = false;
     }
 
     @Override
-    synchronized public MetricIterator query(String name, long from, long to) {
-        MetricList filteredStore = new MetricList(new LinkedList<>());
-
-        // when name is null or empty and intervals are 0, return original iterator
-        if ((name == null || name.equalsIgnoreCase("") && (from == 0 && to == 0)) || (from > to)) {
-            return this.iterator();
-        }
-
-        filteredStore.store = new LinkedList<>(this.store.stream()
+    public MetricIterator query(String name, long from, long to) {
+        List<Metric> list = this.store.get(name).stream()
                 .filter(metric -> metric.getName().equalsIgnoreCase(name) && metric.getTimestamp() >= from
                         && metric.getTimestamp() <= to)
-                .collect(Collectors.toList()));
+                .collect(Collectors.toList());
 
-        return filteredStore.iterator();
+        return new MetricListIterator(list);
+
     }
 }
