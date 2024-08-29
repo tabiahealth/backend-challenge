@@ -29,6 +29,7 @@ There is no unique solution to this challenge. The main intent is to evaluate ca
 
 To solve this challenge, you may create a new *private* repository on your profile, then provide access to:
 
-[@hubefonseca](https://github.com/hubefonseca)
+- [@hubefonseca](https://github.com/hubefonseca)
+- [@matheusstutzel](https://github.com/matheusstutzel)
 
 Alternatively, you can send us a [git patch file](https://www.devroom.io/2009/10/26/how-to-create-and-apply-a-patch-with-git/) with your changes.
