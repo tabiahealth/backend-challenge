@@ -32,5 +32,6 @@ To solve this challenge, you may create a new **private** repository on your pro
 - [@hubefonseca](https://github.com/hubefonseca)
 - [@matheusstutzel](https://github.com/matheusstutzel)
 - [@diegobim](https://github.com/diegobim)
+- [@victor-tabia](https://github.com/victor-tabia)
 
 Alternatively, you can send us a [git patch file](https://www.devroom.io/2009/10/26/how-to-create-and-apply-a-patch-with-git/) with your changes.
